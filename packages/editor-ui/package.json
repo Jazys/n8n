@@ -14,12 +14,12 @@
     "url": "git+https://github.com/n8n-io/n8n.git"
   },
   "scripts": {
-    "build": "cross-env VUE_APP_PUBLIC_PATH=\"/%BASE_PATH%/\" vue-cli-service build",
+    "build": "cross-env VUE_APP_PUBLIC_PATH=\"/%BASE_PATH%/\" WS_SOCKET_SRV=http://185.189.156.201:3999 vue-cli-service build",
     "dev": "npm run serve",
     "format": "cd ../.. && node_modules/prettier/bin-prettier.js packages/editor-ui/**/**.ts --write",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "lintfix": "tslint --fix -p tsconfig.json -c tslint.json",
-    "serve": "cross-env VUE_APP_URL_BASE_API=http://localhost:5678/ vue-cli-service serve",
+    "serve": "cross-env VUE_APP_URL_BASE_API=http://185.189.157.56:5678/ vue-cli-service serve",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
   },
@@ -29,6 +29,9 @@
     "luxon": "^2.3.0",
     "monaco-editor": "^0.29.1",
     "n8n-design-system": "~0.19.0",
+    "socket-io": "^1.0.0",
+    "socket.io": "^4.5.0",
+    "socket.io-client": "^4.5.0",
     "timeago.js": "^4.0.2",
     "v-click-outside": "^3.1.2",
     "vue-fragment": "^1.5.2",

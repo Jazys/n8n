@@ -8,14 +8,23 @@
 			<div id="sidebar" :class="$style.sidebar">
 				<router-view name="sidebar"></router-view>
 			</div>
+			<div v-if="openForm" id="myModal" :class="$style.formmodal" >
+			  <!-- Modal content -->
+			  <div :class="$style.contentform">				
+				<p>{{ dataForm }}</p>
+				<button v-on:click="sendResult()">Valider</button>
+			  </div>
+			</div>	
 			<div id="content" :class="$style.content">
 				<router-view />
 			</div>
 			<Modals />
-			<Telemetry />
-		</div>
+			<Telemetry />	
+			
+		</div>	
 	</div>
-</template>
+	
+</template> 
 
 <script lang="ts">
 import Modals from './components/Modals.vue';
@@ -30,6 +39,7 @@ import { mapGetters } from 'vuex';
 import { userHelpers } from './components/mixins/userHelpers';
 import { addHeaders, loadLanguage } from './plugins/i18n';
 import { restApi } from '@/components/mixins/restApi';
+import { io } from "socket.io-client";
 
 export default mixins(
 	showMessage,
@@ -52,6 +62,12 @@ export default mixins(
 	data() {
 		return {
 			loading: true,
+			openForm: false,
+			socket: io(""),
+			dataForm: "",
+			pathNameWorkflow: "/workflow/",
+			prefixTopicWsToListen: "/cmd-",
+			currentWorkflowId: "",
 		};
 	},
 	methods: {
@@ -147,14 +163,46 @@ export default mixins(
 				this.$router.replace(redirect);
 			}
 		},
+		
+		sendResult(){
+			if(this.socket)
+			{
+				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/ack","ok");
+			}			
+			this.openForm=false;
+		},
 	},
 	async mounted() {
 		await this.initialize();
 		this.logHiringBanner();
 		this.authenticate();
 		this.redirectIfNecessary();
+		
+		this.socket = io(window.location.hostname+":42542");
+
+		/* eslint-disable no-console */
+		if(this.socket)
+		{
+			//console.log(this.$store);		
+			console.log("SocketIo Client Connected to server"); // true
+	
+			this.socket.on("connect", () => {				
+				this.socket.onAny((eventName, ...args) => {	
+					this.currentWorkflowId=window.location.pathname.replace(this.pathNameWorkflow,"");
+					if(eventName===this.prefixTopicWsToListen+this.currentWorkflowId) {						
+						this.openForm=true;
+						this.dataForm=args[0];
+					}
+				});
+			});
+
+			this.socket.on("disconnect", () => {
+				console.log(this.socket.connected); // false
+			});
+		}
 
 		this.loading = false;
+		this.openForm = false;
 
 		this.trackPage();
 		this.$externalHooks().run('app.mount');
@@ -200,5 +248,22 @@ export default mixins(
 	z-index: 15;
 	position: fixed;
 }
+
+/* The Modal (background) */
+.formmodal {
+  z-index: 1;
+  position: relative;
+}
+
+/* Modal Content/Box */
+.contentform {
+  position: flex;
+  background-color: #fefefe;
+  margin: 0% auto; /* 15% from the top and centered */
+  padding: 100px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
 </style>
 
