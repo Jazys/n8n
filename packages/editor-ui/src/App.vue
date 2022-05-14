@@ -10,9 +10,15 @@
 			</div>
 			<div v-if="openForm" id="myModal" :class="$style.formmodal" >
 			  <!-- Modal content -->
-			  <div :class="$style.contentform">				
-				<p>{{ dataForm }}</p>
-				<button v-on:click="sendResult()">Valider</button>
+			  <div :class="$style.contentform">	
+				<h2><p>Need a validation !</p></h2>
+				<br/>
+				<br/>
+				<p><span v-html="dataForm"></span></p>				
+				<br/>
+				<br/>
+				<button :class="$style.buttonform" style="background-color: #FF0000;" v-on:click="sendResult('nok')">Reject</button>
+				<button :class="$style.buttonform" style="background-color: #4CAF50;" v-on:click="sendResult('ok')">Accept</button>
 			  </div>
 			</div>	
 			<div id="content" :class="$style.content">
@@ -164,10 +170,10 @@ export default mixins(
 			}
 		},
 		
-		sendResult(){
+		sendResult(ack: string){
 			if(this.socket)
 			{
-				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/ack","ok");
+				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/ack",ack);
 			}			
 			this.openForm=false;
 		},
@@ -243,7 +249,7 @@ export default mixins(
 	position: fixed;
 	width: 100%;
 }
-
+	
 .sidebar {
 	z-index: 15;
 	position: fixed;
@@ -251,8 +257,10 @@ export default mixins(
 
 /* The Modal (background) */
 .formmodal {
-  z-index: 1;
-  position: relative;
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  z-index: 10;
 }
 
 /* Modal Content/Box */
@@ -262,7 +270,21 @@ export default mixins(
   margin: 0% auto; /* 15% from the top and centered */
   padding: 100px;
   border: 1px solid #888;
-  width: 80%; /* Could be more or less, depending on screen size */
+  width: 99%; /* Could be more or less, depending on screen size */
+}
+
+.buttonform {
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+	border-radius: 8px;
+    width: calc(50% - 4px);
 }
 
 </style>
