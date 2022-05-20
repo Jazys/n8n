@@ -155,6 +155,10 @@ export default mixins(
 				return (this.path ? `${this.path}.` : '') + parameterName;
 			},
 			deleteOption (optionName: string): void {
+
+				if(process.env.VUE_APP_VIEWER_MODE === 'true'){
+					return;
+				}
 				const parameterData = {
 					name: this.getPath(optionName),
 					value: undefined,

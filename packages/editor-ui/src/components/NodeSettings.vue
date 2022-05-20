@@ -1,5 +1,5 @@
 <template>
-	<div class="node-settings" @keydown.stop>
+	<div class="node-settings" @keydown.stop v-show="!viewerMode || node.name.match('Set*')">
 		<div :class="$style.header">
 			<div class="header-side-menu">
 				<NodeTitle class="node-name" :value="node.name" :nodeType="nodeType" @input="nameChanged" :readOnly="isReadOnly"></NodeTitle>
@@ -156,6 +156,7 @@ export default mixins(
 			return {
 				nodeValid: true,
 				nodeColor: null,
+				viewerMode: process.env.VUE_APP_VIEWER_MODE === "true" ? true:false,
 				openPanel: 'params',
 				nodeValues: {
 					color: '#ff0000',

@@ -181,6 +181,11 @@ export default mixins(genericHelpers)
 		},
 		methods: {
 			deleteOption(optionName: string, index?: number) {
+
+				if(process.env.VUE_APP_VIEWER_MODE === 'true'){
+					return;
+				}
+
 				const currentOptionsOfSameType = this.values[optionName];
 				if (!currentOptionsOfSameType || currentOptionsOfSameType.length > 1) {
 					// it's not the only option of this type, so just remove it.

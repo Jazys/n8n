@@ -1,6 +1,6 @@
 <template>
 	<el-dialog
-		:visible="(!!node || renaming) && !isActiveStickyNode"
+		:visible="(!!node || renaming) && !isActiveStickyNode "
 		:before-close="close"
 		:show-close="false"
 		custom-class="data-display-wrapper"
@@ -58,6 +58,7 @@ export default mixins(externalHooks, nodeHelpers, workflowHelpers).extend({
 		return {
 			settingsEventBus: new Vue(),
 			triggerWaitingWarningEnabled: false,
+			viewerMode: process.env.VUE_APP_VIEWER_MODE === "true" ? true:false,
 		};
 	},
 	computed: {

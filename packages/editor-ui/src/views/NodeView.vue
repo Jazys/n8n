@@ -24,11 +24,11 @@
 				<div v-for="nodeData in nodes" :key="getNodeIndex(nodeData.name)">
 					<node
 						v-if="nodeData.type !== STICKY_NODE_TYPE"
-						@duplicateNode="duplicateNode"
-						@deselectAllNodes="deselectAllNodes"
-						@deselectNode="nodeDeselectedByName"
-						@nodeSelected="nodeSelectedByName"
-						@removeNode="removeNode"
+						@duplicateNode="!viewerMode && duplicateNode"
+						@deselectAllNodes="!viewerMode && deselectAllNodes"
+						@deselectNode="!viewerMode && nodeDeselectedByName"
+						@nodeSelected="!viewerMode && nodeSelectedByName"
+						@removeNode="!viewerMode && removeNode"
 						@runWorkflow="runWorkflow"
 						@moved="onNodeMoved"
 						@run="onNodeRun"
@@ -61,7 +61,7 @@
 		<DataDisplay :renaming="renamingActive" @valueChanged="valueChanged"/>
 		<div
 			class="node-buttons-wrapper"
-			v-if="!createNodeActive && !isReadOnly"
+			v-show="!viewerMode"
 		>
 			<div class="node-creator-button">
 				<n8n-icon-button size="xlarge" icon="plus" @click="() => openNodeCreator('add_node_button')" :title="$locale.baseText('nodeView.addNode')"/>
@@ -387,6 +387,7 @@ export default mixins(
 				pullConnActive: false,
 				dropPrevented: false,
 				renamingActive: false,
+				viewerMode: false,
 			};
 		},
 		beforeDestroy () {
@@ -1537,6 +1538,11 @@ export default mixins(
 				};
 
 				this.instance.bind('connectionAborted', (connection) => {
+
+					if (this.viewerMode){
+						return;
+					}
+
 					try {
 						if (this.dropPrevented) {
 							this.dropPrevented = false;
@@ -1563,6 +1569,11 @@ export default mixins(
 				});
 
 				this.instance.bind('beforeDrop', (info) => {
+
+					if (this.viewerMode){
+						return;
+					}
+
 					try {
 						const sourceInfo = info.connection.endpoints[0].getParameters();
 						// @ts-ignore
@@ -1603,7 +1614,11 @@ export default mixins(
 							targetOutputIndex: targetInfo.index,
 						};
 
-						CanvasHelpers.resetConnection(info.connection);
+						if (! this.viewerMode){
+							CanvasHelpers.resetConnection(info.connection);
+						}
+
+						
 
 						if (this.isReadOnly === false) {
 							let exitTimer: NodeJS.Timeout | undefined;
@@ -1666,21 +1681,25 @@ export default mixins(
 								}
 							});
 
-							CanvasHelpers.addConnectionActionsOverlay(info.connection,
-								() => {
-									activeConnection = null;
-									this.__deleteJSPlumbConnection(info.connection);
-								},
-								() => {
-									setTimeout(() => {
-										insertNodeAfterSelected({
-											sourceId: info.sourceId,
-											index: sourceInfo.index,
-											connection: info.connection,
-											eventSource: 'node_connection_action',
-										});
-									}, 150);
-								});
+							if (! this.viewerMode){
+								CanvasHelpers.addConnectionActionsOverlay(info.connection,
+									() => {
+										activeConnection = null;
+										this.__deleteJSPlumbConnection(info.connection);
+									},
+									() => {
+										setTimeout(() => {
+											insertNodeAfterSelected({
+												sourceId: info.sourceId,
+												index: sourceInfo.index,
+												connection: info.connection,
+												eventSource: 'node_connection_action',
+											});
+										}, 150);
+									});
+							}
+
+							
 						}
 
 						CanvasHelpers.moveBackInputLabelPosition(info.targetEndpoint);
@@ -1706,6 +1725,11 @@ export default mixins(
 				});
 
 				this.instance.bind('connectionMoved', (info) => {
+
+					if (this.viewerMode){
+						return;
+					}
+
 					try {
 						// When a connection gets moved from one node to another it for some reason
 						// calls the "connection" event but not the "connectionDetached" one. So we listen
@@ -1738,6 +1762,11 @@ export default mixins(
 				});
 
 				this.instance.bind('connectionDetached', (info) => {
+
+					if (this.viewerMode){
+						return;
+					}
+
 					try {
 						CanvasHelpers.resetInputLabelPosition(info.targetEndpoint);
 						info.connection.removeOverlays();
@@ -1757,6 +1786,11 @@ export default mixins(
 
 				// @ts-ignore
 				this.instance.bind('connectionDrag', (connection: Connection) => {
+
+					if (this.viewerMode){
+						return;
+					}
+
 					try {
 						this.pullConnActiveNodeName = null;
 						this.pullConnActive = true;
@@ -1825,6 +1859,11 @@ export default mixins(
 
 				// @ts-ignore
 				this.instance.bind(('plusEndpointClick'), (endpoint: Endpoint) => {
+
+					if (this.viewerMode){
+						return;
+					}
+
 					if (endpoint && endpoint.__meta) {
 						insertNodeAfterSelected({
 							sourceId: endpoint.__meta.nodeId,
@@ -2819,6 +2858,12 @@ export default mixins(
 		},
 
 		async mounted () {
+			/* eslint-disable no-console */
+			console.log(process.env);
+
+			if(process.env.VUE_APP_VIEWER_MODE === 'true' ){
+				this.viewerMode=true;
+			}
 			this.$titleReset();
 			window.addEventListener('message', this.onPostMessageReceived);
 			this.$root.$on('importWorkflowData', this.onImportWorkflowDataEvent);
@@ -2846,8 +2891,10 @@ export default mixins(
 			}
 
 			this.instance.ready(async () => {
-				try {
-					this.initNodeView();
+				try {					
+				
+					this.initNodeView();			
+
 					await this.initView();
 					if (window.top) {
 						window.top.postMessage(JSON.stringify({command: 'n8nReady',version:this.$store.getters.versionCli}), '*');

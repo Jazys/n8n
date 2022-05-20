@@ -1,11 +1,11 @@
 <template>
 	<div :class="$style.container">
 		<LoadingView v-if="loading" />
-		<div v-else id="app" :class="$style.container">
-			<div id="header" :class="$style.header">
+		<div v-else id="app" :class="$style.container">		
+			<div id="header" :class="$style.header" >
 				<router-view name="header"></router-view>
 			</div>
-			<div id="sidebar" :class="$style.sidebar">
+			<div v-show="!viewerMode" id="sidebar" :class="$style.sidebar" >
 				<router-view name="sidebar"></router-view>
 			</div>
 			<div v-if="openForm" id="myModal" :class="$style.formmodal" >
@@ -74,6 +74,7 @@ export default mixins(
 			pathNameWorkflow: "/workflow/",
 			prefixTopicWsToListen: "/cmd-",
 			currentWorkflowId: "",
+			viewerMode:false,
 		};
 	},
 	methods: {
@@ -180,6 +181,11 @@ export default mixins(
 	},
 	async mounted() {
 		await this.initialize();
+
+		if(process.env.VUE_APP_VIEWER_MODE === 'true'){
+			this.viewerMode=true;
+		}
+
 		this.logHiringBanner();
 		this.authenticate();
 		this.redirectIfNecessary();
