@@ -1,5 +1,5 @@
 <template>
-	<div class="node-settings" @keydown.stop v-show="!viewerMode || node.name.match('Set*')">
+	<div class="node-settings" @keydown.stop v-show="!viewerMode || node.name.match('SetParam*')">
 		<div :class="$style.header">
 			<div class="header-side-menu">
 				<NodeTitle class="node-name" :value="node.name" :nodeType="nodeType" @input="nameChanged" :readOnly="isReadOnly"></NodeTitle>

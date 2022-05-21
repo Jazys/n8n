@@ -2858,9 +2858,7 @@ export default mixins(
 		},
 
 		async mounted () {
-			/* eslint-disable no-console */
-			console.log(process.env);
-
+					
 			if(process.env.VUE_APP_VIEWER_MODE === 'true' ){
 				this.viewerMode=true;
 			}

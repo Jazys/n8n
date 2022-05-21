@@ -14,7 +14,15 @@
 				<h2><p>Need a validation !</p></h2>
 				<br/>
 				<br/>
-				<p><span v-html="dataForm"></span></p>				
+				<p v-for="item in dataForm.data" :key="item.display">
+					<label for="item.input" v-if="item.input!=''"> {{ item.input }} :</label>
+					<br/>
+
+					<input v-model="item.input_value" placeholder="" v-if="item.input!=''">
+					<br/>
+					<span v-html="item.display">
+					</span>
+				</p>				
 				<br/>
 				<br/>
 				<button :class="$style.buttonform" style="background-color: #FF0000;" v-on:click="sendResult('nok')">Reject</button>
@@ -70,7 +78,8 @@ export default mixins(
 			loading: true,
 			openForm: false,
 			socket: io(""),
-			dataForm: "",
+			dataFormRes:{"status":"","data":[]},
+			dataForm: {"data":[]},
 			pathNameWorkflow: "/workflow/",
 			prefixTopicWsToListen: "/cmd-",
 			currentWorkflowId: "",
@@ -174,7 +183,11 @@ export default mixins(
 		sendResult(ack: string){
 			if(this.socket)
 			{
-				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/ack",ack);
+				this.dataFormRes.status=ack;
+				this.dataFormRes.data=this.dataForm.data;
+				/* eslint-disable no-console */
+				//console.log(this.dataForm);
+				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/ack",this.dataForm);
 			}			
 			this.openForm=false;
 		},
@@ -202,8 +215,9 @@ export default mixins(
 				this.socket.onAny((eventName, ...args) => {	
 					this.currentWorkflowId=window.location.pathname.replace(this.pathNameWorkflow,"");
 					if(eventName===this.prefixTopicWsToListen+this.currentWorkflowId) {						
-						this.openForm=true;
-						this.dataForm=args[0];
+						this.openForm=true;			
+						this.dataForm=JSON.parse(args[0]);
+						console.log(this.dataForm);
 					}
 				});
 			});
