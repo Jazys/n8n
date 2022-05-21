@@ -14,12 +14,12 @@
     "url": "git+https://github.com/n8n-io/n8n.git"
   },
   "scripts": {
-    "build": "cross-env VUE_APP_PUBLIC_PATH=\"/%BASE_PATH%/\" VUE_APP_VIEWER_MODE=true vue-cli-service build",
+    "build": "cross-env VUE_APP_PUBLIC_PATH=\"/%BASE_PATH%/\" VUE_APP_VIEWER_MODE=false vue-cli-service build",
     "dev": "npm run serve",
     "format": "cd ../.. && node_modules/prettier/bin-prettier.js packages/editor-ui/**/**.ts --write",
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "lintfix": "tslint --fix -p tsconfig.json -c tslint.json",
-    "serve": "cross-env VUE_APP_URL_BASE_API=http://185.189.157.56:5678/ vue-cli-service serve",
+    "serve": "cross-env VUE_APP_URL_BASE_API=http://192.168.1.21:5678/ vue-cli-service serve",
     "test:e2e": "vue-cli-service test:e2e",
     "test:unit": "vue-cli-service test:unit"
   },

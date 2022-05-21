@@ -187,7 +187,7 @@ export default mixins(
 				this.dataFormRes.data=this.dataForm.data;
 				/* eslint-disable no-console */
 				//console.log(this.dataForm);
-				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/"+this.$store.getters.sessionId+"/ack",this.dataForm);
+				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/"+this.$store.getters.sessionId+"/ack",this.dataFormRes);
 			}			
 			this.openForm=false;
 		},
