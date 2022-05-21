@@ -1,5 +1,8 @@
 <template>
 	<div class="container" v-if="workflowName">
+		
+		<span class="session"> sessionId : {{ this.$store.getters.sessionId }}</span>
+
 		<BreakpointsObserver :valueXS="15" :valueSM="25" :valueMD="50" class="name-container">
 			<template v-slot="{ value }">
 				<ShortenName
@@ -58,6 +61,8 @@
 			/>
 		</span>
 		<span v-else class="tags"></span>
+
+
 
 		<PushConnectionTracker class="actions">
 			<template>
@@ -287,6 +292,11 @@ $--header-spacing: 20px;
 }
 
 .actions {
+	display: flex;
+	align-items: center;
+}
+
+.session {
 	display: flex;
 	align-items: center;
 }

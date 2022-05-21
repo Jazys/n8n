@@ -5,7 +5,7 @@
 			<div id="header" :class="$style.header" >
 				<router-view name="header"></router-view>
 			</div>
-			<div v-show="!viewerMode" id="sidebar" :class="$style.sidebar" >
+			<div v-if="!viewerMode" id="sidebar" :class="$style.sidebar" >
 				<router-view name="sidebar"></router-view>
 			</div>
 			<div v-if="openForm" id="myModal" :class="$style.formmodal" >
@@ -187,7 +187,7 @@ export default mixins(
 				this.dataFormRes.data=this.dataForm.data;
 				/* eslint-disable no-console */
 				//console.log(this.dataForm);
-				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/ack",this.dataForm);
+				this.socket.emit(this.prefixTopicWsToListen+this.currentWorkflowId+"/"+this.$store.getters.sessionId+"/ack",this.dataForm);
 			}			
 			this.openForm=false;
 		},
@@ -204,20 +204,18 @@ export default mixins(
 		this.redirectIfNecessary();
 		
 		this.socket = io(window.location.hostname+":42542");
-
+	
 		/* eslint-disable no-console */
 		if(this.socket)
-		{
-			//console.log(this.$store);		
+		{		
 			console.log("SocketIo Client Connected to server"); // true
 	
 			this.socket.on("connect", () => {				
 				this.socket.onAny((eventName, ...args) => {	
 					this.currentWorkflowId=window.location.pathname.replace(this.pathNameWorkflow,"");
-					if(eventName===this.prefixTopicWsToListen+this.currentWorkflowId) {						
+					if(eventName===this.prefixTopicWsToListen+this.currentWorkflowId+"/"+this.$store.getters.sessionId) {						
 						this.openForm=true;			
 						this.dataForm=JSON.parse(args[0]);
-						console.log(this.dataForm);
 					}
 				});
 			});
