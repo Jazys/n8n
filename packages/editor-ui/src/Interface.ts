@@ -656,6 +656,7 @@ export interface IN8nUISettings {
 		enabled: boolean;
 		host: string;
 	};
+	websocketUrl:string;
 }
 
 export interface IWorkflowSettings extends IWorkflowSettingsWorkflow {
@@ -812,6 +813,7 @@ export interface IRootState {
 	sidebarMenuItems: IMenuItem[];
 	instanceId: string;
 	nodeMetadata: {[nodeName: string]: INodeMetadata};
+	websocketUrl: string;
 }
 
 export interface ICredentialTypeMap {

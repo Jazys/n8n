@@ -107,6 +107,7 @@ const module: Module<ISettingsState, IRootState> = {
 			context.commit('setN8nMetadata', settings.n8nMetadata || {}, {root: true});
 			context.commit('setDefaultLocale', settings.defaultLocale, {root: true});
 			context.commit('versions/setVersionNotificationSettings', settings.versionNotifications, {root: true});
+			context.commit('setWebSocketUrl', settings.websocketUrl, {root: true});
 		},
 		async fetchPromptsData(context: ActionContext<ISettingsState, IRootState>) {
 			if (!context.getters.isTelemetryEnabled) {

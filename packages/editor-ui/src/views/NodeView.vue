@@ -24,11 +24,11 @@
 				<div v-for="nodeData in nodes" :key="getNodeIndex(nodeData.name)">
 					<node
 						v-if="nodeData.type !== STICKY_NODE_TYPE"
-						@duplicateNode="!viewerMode && duplicateNode"
+						@duplicateNode="duplicateNode"
 						@deselectAllNodes="!viewerMode && deselectAllNodes"
 						@deselectNode="!viewerMode && nodeDeselectedByName"
 						@nodeSelected="!viewerMode && nodeSelectedByName"
-						@removeNode="!viewerMode && removeNode"
+						@removeNode="removeNode" 
 						@runWorkflow="runWorkflow"
 						@moved="onNodeMoved"
 						@run="onNodeRun"
@@ -935,7 +935,10 @@ export default mixins(
 					return node.name;
 				});
 				nodesToDelete.forEach((nodeName: string) => {
-					this.removeNode(nodeName);
+					if(this.viewerMode === false)
+					{
+						this.removeNode(nodeName);
+					}
 				});
 			},
 
@@ -1614,7 +1617,7 @@ export default mixins(
 							targetOutputIndex: targetInfo.index,
 						};
 
-						if (! this.viewerMode){
+						if (!this.viewerMode){
 							CanvasHelpers.resetConnection(info.connection);
 						}
 
@@ -2057,6 +2060,11 @@ export default mixins(
 				this.$store.commit('removeConnection', { connection: connectionInfo });
 			},
 			async duplicateNode (nodeName: string) {
+
+				if (this.viewerMode === true) {
+					return;
+				}
+
 				if (this.editAllowedCheck() === false) {
 					return;
 				}
@@ -2219,6 +2227,11 @@ export default mixins(
 				});
 			},
 			removeNode (nodeName: string) {
+
+				if (this.viewerMode === true) {
+					return;
+				}				
+
 				if (this.editAllowedCheck() === false) {
 					return;
 				}

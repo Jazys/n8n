@@ -464,6 +464,7 @@ export interface IN8nUISettings {
 		enabled: boolean;
 		host: string;
 	};
+	websocketUrl?: string;
 }
 
 export interface IPersonalizationSurveyAnswers {

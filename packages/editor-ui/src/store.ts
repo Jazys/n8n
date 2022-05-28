@@ -91,6 +91,7 @@ const state: IRootState = {
 	sidebarMenuItems: [],
 	instanceId: '',
 	nodeMetadata: {},
+	websocketUrl:'',
 };
 
 const modules = {
@@ -558,6 +559,9 @@ export const store = new Vuex.Store({
 		setInstanceId(state, instanceId: string) {
 			Vue.set(state, 'instanceId', instanceId);
 		},
+		setWebSocketUrl(state, websocketUrl: string) {
+			Vue.set(state, 'websocketUrl', websocketUrl);
+		},
 		setOauthCallbackUrls(state, urls: IDataObject) {
 			Vue.set(state, 'oauthCallbackUrls', urls);
 		},
@@ -717,6 +721,10 @@ export const store = new Vuex.Store({
 
 		instanceId: (state): string => {
 			return state.instanceId;
+		},
+
+		webSocketUrl: (state): string => {
+			return state.websocketUrl;
 		},
 
 		saveDataErrorExecution: (state): string => {

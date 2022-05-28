@@ -203,7 +203,7 @@ export default mixins(
 		this.authenticate();
 		this.redirectIfNecessary();
 		
-		this.socket = io(window.location.hostname+":42542");
+		this.socket = io(this.$store.getters.webSocketUrl);
 	
 		/* eslint-disable no-console */
 		if(this.socket)
@@ -211,7 +211,7 @@ export default mixins(
 			console.log("SocketIo Client Connected to server"); // true
 	
 			this.socket.on("connect", () => {				
-				this.socket.onAny((eventName, ...args) => {	
+				this.socket.onAny((eventName, ...args) => {				
 					this.currentWorkflowId=window.location.pathname.replace(this.pathNameWorkflow,"");
 					if(eventName===this.prefixTopicWsToListen+this.currentWorkflowId+"/"+this.$store.getters.sessionId) {						
 						this.openForm=true;			
